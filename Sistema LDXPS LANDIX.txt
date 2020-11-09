@@ -90,7 +90,7 @@ Resposta:
  Regras:
      - O microserviço irá listar todos os clientes relacionado ao vendedor selecionado;
 	 - Verifica se o dado do atributo sellerCode é do tipo VARCHAR para consulta na base;
-	 - Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados
+	 - Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
 	 
 Camada de consulta de dados do Cliente
      - Invoca método para select da base de dados;	 
@@ -103,7 +103,26 @@ Resposta:
 	
 	
 	
- --> Case 1.3: Usuário clica no botão <Editar Cliente> dentro da aba Clientes no Vendedor selecionado e o microserviço editClient é chamado.
+ --> Case 1.3: Usuário clica no botão <Editar Cliente> dentro da aba Clientes no Vendedor selecionado e o microserviço listClient é chamado.
+ 
+  BACK END - Microserviço listClient
+  
+  Regras:
+      - O microserviço irá listar o cliente especificado;
+	  - Verifica se o dado do atributo clienteCode é do tipo VARCHAR para consulta na base;
+	  - Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
+	  
+Camada de consulta de dados do Cliente
+     - Invoca método para select da base de dados;
+	 - SELECT DSNOME, IDTIPO, CDVEND, DSLIM FROM CLIENTES WHERE CDCL = clienteCode;
+	 - Verifica status de leitura dos dados da base;
+	 
+Resposta:
+    - A tela irá apresentar o Cliente específico para ser alterado;
+	
+ 
+ Após procedimento, microserviço de edição de cliente é chamado.
+ 
 
  
  BACK END - Microserviço editClient
@@ -128,9 +147,9 @@ Resposta:
 	
 
 	
- --> Case 1.4: Usuário selecio botão <Criar Vendedor> e o microserviço creatSeller é chamado.
+ --> Case 1.4: Usuário selecio botão <Criar Vendedor> e o microserviço createSeller é chamado.
 
- BACK END - Microserviço creatSeller
+ BACK END - Microserviço createSeller
 
 Regras:
 
@@ -142,7 +161,7 @@ Regras:
 	
 Camada de gravação de dados:
    - Invoca métodos para insert na base de dados;
-   - INSERT INTO VENDEROES (DSNOME, CDTAB, DTNASC) VALUES (nameSeller,tableCode,date);
+   - INSERT INTO VENDEROES (CDVEND, DSNOME, CDTAB, DTNASC) VALUES (codeSeller, nameSeller, tableCode, date);
    - Verifica status de gravação dos dados na base;
 
 Resposta:
@@ -150,9 +169,9 @@ Resposta:
    - O novo vendedor cadastrado terá os dados preenchidos na tela;
    
    
-  --> Case 1.5 - Usuário seleciona botão <Excluir> na tela de Vendedores e o microserviço deletSeller é chamado;
+  --> Case 1.5 - Usuário seleciona botão <Excluir> na tela de Vendedores e o microserviço deleteSeller é chamado;
  
- BACK END - Microserviço deletSeller
+ BACK END - Microserviço deleteSeller
  
 Regras:
 
@@ -204,16 +223,16 @@ Regras:
 	
 Camada de gravação de dados:
    - Invoca método para insert na base de dados;
-   - INSERT INTO CLIENTES (DSNOME, IDTIPO, CDVEND, DSLIM) VALUES (nameClient,typeClient,sellerCode,credLimit);
+   - INSERT INTO CLIENTES (CDCL, DSNOME, IDTIPO, CDVEND, DSLIM) VALUES (codeClient, nameClient, typeClient, sellerCode, credLimit);
    - Verifica status de gravação dos dados na base;
 
 Resposta:
    - O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
    - O novo cliente cadastrado terá os dados preenchidos na tela;
    
- --> Case 2.2 - Usuário seleciona botão <Excluir> na tela de Edição de clientes e o microserviço deletClient é chamado;
+ --> Case 2.2 - Usuário seleciona botão <Excluir> na tela de Edição de clientes e o microserviço deleteClient é chamado;
  
- BACK END - Microserviço deletClient
+ BACK END - Microserviço deleteClient
  
 Regras:
 
@@ -237,7 +256,7 @@ O Usuário seleciona o botão < Manutenção cadastro vendedor> ;
 --> Case 3.1 - Usuário seleciona botão <Criar Vendedor> e o microserviço creatSeller é chamado;
     - Microserviço detalhado conforme Case 1.4 acima.
 	
---> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deletSeller é chamado;
+--> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deleteSeller é chamado;
     - Microserviço detalhado conforme Case 1.5 acima.
 	
 --> Case 3.3 - Usuário seleciona botão <Editar Vendedor> e o microserviço editSeller é chamado;
@@ -247,10 +266,10 @@ O Usuário seleciona o botão < Manutenção cadastro vendedor> ;
 
 O Usuário seleciona o botão < Manutenção cadastro cliente> ;
 
---> Case 3.1 - Usuário seleciona botão <Criar cliente> e o microserviço creatClient é chamado;
+--> Case 3.1 - Usuário seleciona botão <Criar cliente> e o microserviço createClient é chamado;
     - Microserviço detalhado conforme Case 2.1 acima.
 	
---> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço cr é chamado;
+--> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deleteClient é chamado;
     - Microserviço detalhado conforme Case 2.2 acima.
 	
 --> Case 3.3 - Usuário seleciona botão <Editar Cliente> e o microserviço editSeller é chamado;
