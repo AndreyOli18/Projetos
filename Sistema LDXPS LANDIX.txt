@@ -29,15 +29,11 @@ BACK END - Microserviço ListSeller
 
 Regras: 
 	- O microserviço irá consultar os vendedores com os dados populados na tabela VENDEDORES;
-	- Verifica se o dado do atributo sellerCode é do tipo VARCHAR para consulta na base;
-	- Verifica se o dado do atributo nameSeller é do tipo VARCHAR para consulta na base;
-	- Verifica se o dado do atributo tableCode é do tipo INTEGER para consulta na base;
-	- Verifica se o dado do atributo date é do tipo DATE para consulta na base;
-	- Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
+
 	
 Camada de consulta de dados:
 	- Invoca método para select da base de dados;
-	- SELECT * FROM VENDEDORES
+	- SELECT CDVEND, DSNOME, CDTAB, DTNASC  FROM VENDEDORES
 	- Verifica status de leitura dos dados da base;
 	
 Resposta:
@@ -49,8 +45,22 @@ Resposta:
 	
 Na tela VENDEDORES, após a listagem dos vendendores;
 
- --> Case 1.1: Usuário clica no botão <Editar Vendedor> e o microserviço editSeller é chamado.
+ --> Case 1.1: Usuário clica no botão <Editar Vendedor> e o microserviço listSeller com o filtro de um vendedor é chamado.
+ 
+ Regras: 
+    - Verifica se o código informado sellerCode pertence a um vendedor já cadastrado;
+	- O microserviço irá consultar o vendedor filtrado na tabela VENDEDORES;
 
+	
+Camada de consulta de dados:
+	- Invoca método para select da base de dados;
+	- SELECT DSNOME, CDTAB, DTNASC  FROM VENDEDORES WHERE CDVEND = sellerCode;
+	- Verifica status de leitura dos dados da base;
+	
+Resposta:
+	- Será listado o vendedor selecionado
+ 
+ Após o processo, o microserviço editSeller é chamado.
  
  BACK END - Microserviço editSeller
 
@@ -84,7 +94,7 @@ Resposta:
 	 
 Camada de consulta de dados do Cliente
      - Invoca método para select da base de dados;	 
-     - SELECT DSNOME, IDTIPO,DSLIM FROM CLIENTES WHERE CDVEND = sellerCode; 
+     - SELECT DSNOME, IDTIPO, DSLIM FROM CLIENTES WHERE CDVEND = sellerCode; 
      - Verifica status de leitura dos dados da base;
 
 Resposta:
