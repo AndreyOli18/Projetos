@@ -1,279 +1,247 @@
----------------> CRIAÇÃO DE TABELAS <----------------------------------------
+--------------------------------> CRIAÇÃO DE TABELAS <----------------------------------------
 
 CREATE TABLE VENDEDORES (
- CDVEND VARCHAR(36) PRIMARY KEY,
- DSNOME VARCHAR(50),
- CDTAB INT,
- DTNASC DATE
- );
+	CDVEND VARCHAR(36) PRIMARY KEY,
+	DSNOME VARCHAR(50),
+	CDTAB INT,
+	DTNASC DATE
+);
  
 CREATE TABLE CLIENTES (
- CDCL VARCHAR(36) PRIMARY KEY,
- DSNOME VARCHAR(50),
- IDTIPO CHAR(2) default 'PF',
- CDVEND VARCHAR(36),
- DSLIM DECIMAL(15,2)
- FOREIGN KEY(CDVEND) REFERENCES VENDEDORES(CDVEND)
+	CDCL VARCHAR(36) PRIMARY KEY,
+	DSNOME VARCHAR(50),
+	IDTIPO CHAR(2) default 'PF',
+	CDVEND VARCHAR(36),
+	DSLIM DECIMAL(15,2)
+	FOREIGN KEY(CDVEND) REFERENCES VENDEDORES(CDVEND)
 );
-
-
-
 
 ----------------------------------------------------------------------------------------------
 
+Na HOME, ao selecionar o botão VENDEDORES o microserviço listSeller é chamado.
 
-Na HOME, ao selecionar o botão VENDEDORES o microserviço ListSeller é chamado.
+	BACK END - Microserviço listSeller
 
+		Regras: 
+			- O microserviço irá consultar os vendedores com os dados populados na tabela VENDEDORES;
+			
+		Camada de consulta de dados:
+			- Invoca método para select da base de dados;
+			- SELECT CDVEND, DSNOME, CDTAB, DTNASC  FROM VENDEDORES;
+			- Verifica status de leitura dos dados da base;
+			
+		Resposta:
+			- A listagem de vendedores já cadastrados apareceram  na tela;	
+			
+Na tela VENDEDORES, após a listagem dos vendendores.
 
-BACK END - Microserviço ListSeller
-
-Regras: 
-	- O microserviço irá consultar os vendedores com os dados populados na tabela VENDEDORES;
-
-	
-Camada de consulta de dados:
-	- Invoca método para select da base de dados;
-	- SELECT CDVEND, DSNOME, CDTAB, DTNASC  FROM VENDEDORES
-	- Verifica status de leitura dos dados da base;
-	
-Resposta:
-	- A listagem de vendedores já cadastrados apareceram  na tela;
-	
-	
-	
-	
-	
-Na tela VENDEDORES, após a listagem dos vendendores;
-
- --> Case 1.1: Usuário clica no botão <Editar Vendedor> e o microserviço listSeller com o filtro de um vendedor é chamado.
+	--> Case 1.1: Usuário clica no botão <Editar Vendedor> e o microserviço listSeller com o filtro de um vendedor é chamado.
  
- Regras: 
-    - Verifica se o código informado sellerCode pertence a um vendedor já cadastrado;
-	- O microserviço irá consultar o vendedor filtrado na tabela VENDEDORES;
+		Regras: 
+			- Verifica se o código informado sellerCode pertence a um vendedor já cadastrado;
+			- O microserviço irá consultar o vendedor filtrado na tabela VENDEDORES;
 
+		Camada de consulta de dados:
+			- Invoca método para select da base de dados;
+			- SELECT DSNOME, CDTAB, DTNASC  FROM VENDEDORES WHERE CDVEND = sellerCode;
+			- Verifica status de leitura dos dados da base;
+			
+		Resposta:
+			- Será listado o vendedor selecionado;
 	
-Camada de consulta de dados:
-	- Invoca método para select da base de dados;
-	- SELECT DSNOME, CDTAB, DTNASC  FROM VENDEDORES WHERE CDVEND = sellerCode;
-	- Verifica status de leitura dos dados da base;
-	
-Resposta:
-	- Será listado o vendedor selecionado
- 
- Após o processo, o microserviço editSeller é chamado.
- 
- BACK END - Microserviço editSeller
+	Após o processo, o microserviço editSeller é chamado.
 
-Regras: 
-	- O microserviço irá atualizar os dados relacionados ao vendedor que está atribuido ao código da tabela VENDEDORES;
-	- Verifica se o código informado (sellerCode) pertence a um vendedor já cadastrado;
-	- Verifica se o dado do atributo nameSeller é do tipo VARCHAR para gravação na base;
-	- Verifica se o dado do atributo tableCode é do tipo INTEGER para gravação na base;
-	- Verifica se o dado do atributo date é do tipo DATE para gravação na base;
-	- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
-	
-Camada de gravação de dados:
-	- Invoca método para update da base de dados;
-	- UPDATE VENDEDORES SET DSNOME = :nameSeller, CDTAB = :tableCode, DTNASC = :date WHERE CDVEND = :sellerCode;
-	- Verifica status de gravação dos dados da base;
-	
-Resposta:
-	- O microserviço irá dar resposta de HTTP status OK para confirmar gravação dos dados;
-	- Os dados do vendedor serão alterados
-	
-	
- --> Case 1.2: Usuário seleciona botão <Clientes> em vendedor específico e o microserviço listClient é chamado.
- 
- 
- BACK END - Microserviço listClient
- 
- Regras:
-     - O microserviço irá listar todos os clientes relacionado ao vendedor selecionado;
-	 - Verifica se o dado do atributo sellerCode é do tipo VARCHAR para consulta na base;
-	 - Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
-	 
-Camada de consulta de dados do Cliente
-     - Invoca método para select da base de dados;	 
-     - SELECT DSNOME, IDTIPO, DSLIM FROM CLIENTES WHERE CDVEND = sellerCode; 
-     - Verifica status de leitura dos dados da base;
+		BACK END - Microserviço editSeller
 
-Resposta:
-    - A tela irá apresentar os Clientes com os campos de Nome,tipo e limite de crédito correspondentes ao vendedor selecionado;
-	
-	
-	
-	
- --> Case 1.3: Usuário clica no botão <Editar Cliente> dentro da aba Clientes no Vendedor selecionado e o microserviço listClient é chamado.
- 
-  BACK END - Microserviço listClient
+			Regras: 
+				- O microserviço irá atualizar os dados relacionados ao vendedor que está atribuido ao código da tabela VENDEDORES;
+				- Verifica se o código informado (sellerCode) pertence a um vendedor já cadastrado;
+				- Verifica se o dado do atributo nameSeller é do tipo VARCHAR para gravação na base;
+				- Verifica se o dado do atributo tableCode é do tipo INTEGER para gravação na base;
+				- Verifica se o dado do atributo date é do tipo DATE para gravação na base;
+				- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
+				
+			Camada de gravação de dados:
+				- Invoca método para update da base de dados;
+				- UPDATE VENDEDORES SET DSNOME = :nameSeller, CDTAB = :tableCode, DTNASC = :date WHERE CDVEND = :sellerCode;
+				- Verifica status de gravação dos dados da base;
+				
+			Resposta:
+				- O microserviço irá dar resposta de HTTP status OK para confirmar gravação dos dados;
+				- Os dados do vendedor serão alterados;
+		
+	--> Case 1.2: Usuário seleciona botão <Clientes> em vendedor específico e o microserviço listClient é chamado.
   
-  Regras:
-      - O microserviço irá listar o cliente especificado;
-	  - Verifica se o dado do atributo clienteCode é do tipo VARCHAR para consulta na base;
-	  - Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
-	  
-Camada de consulta de dados do Cliente
-     - Invoca método para select da base de dados;
-	 - SELECT DSNOME, IDTIPO, CDVEND, DSLIM FROM CLIENTES WHERE CDCL = clienteCode;
-	 - Verifica status de leitura dos dados da base;
+		BACK END - Microserviço listClient
+ 
+			Regras:
+				- O microserviço irá listar todos os clientes relacionado ao vendedor selecionado;
+				- Verifica se o dado do atributo sellerCode é do tipo VARCHAR para consulta na base;
+				- Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
+				 
+			Camada de consulta de dados do Cliente:
+				- Invoca método para select da base de dados;	 
+				- SELECT DSNOME, IDTIPO, DSLIM FROM CLIENTES WHERE CDVEND = sellerCode; 
+				- Verifica status de leitura dos dados da base;
+
+			Resposta:
+				- A tela irá apresentar os Clientes com os campos de nome, tipo e limite de crédito correspondentes ao vendedor selecionado;
+			
+	--> Case 1.3: Usuário clica no botão <Editar Cliente> dentro da aba Clientes no Vendedor selecionado e o microserviço listClient é chamado.
+ 
+		BACK END - Microserviço listClient
+  
+			Regras:
+				- O microserviço irá listar o cliente especificado;
+				- Verifica se o dado do atributo clienteCode é do tipo VARCHAR para consulta na base;
+				- Após todas as verificações na camada de serviço, invoca a camada de leitura na base de dados;
+				  
+			Camada de consulta de dados do Cliente:
+				- Invoca método para select da base de dados;
+				- SELECT DSNOME, IDTIPO, CDVEND, DSLIM FROM CLIENTES WHERE CDCL = clienteCode;
+				- Verifica status de leitura dos dados da base;
+				 
+			Resposta:
+				- A tela irá apresentar o Cliente específico para ser alterado;
 	 
-Resposta:
-    - A tela irá apresentar o Cliente específico para ser alterado;
+	Após procedimento, microserviço de edição de cliente é chamado.
+  
+		BACK END - Microserviço editClient
+
+			Regras: 
+				- O microserviço irá atualizar os dados relacionados ao cliente que está atribuido ao vendendor selecionado na tabela CLIENTES;
+				- Verifica se o código informado sellerCode pertence a um vendedor já cadastrado;
+				- Verifica se o dado do atributo nameClient é do tipo VARCHAR para gravação na base;
+				- Verifica se o dado do atributo typeClient é do tipo CHAR para gravação na base;
+				- Verifica se o dado do atributo credLimit é do tipo DECIMAL para gravação na base;
+				- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
+				
+			Camada de gravação de dados:
+				- Invoca método para update da base de dados;
+				- UPDATE CLIENTES SET DSNOME = :nameClient, IDTIPO = :typeClient, DSLIM = :credLimit WHERE CDVEND = :sellerCode;
+				- Verifica status de gravação dos dados da base;
+				
+			Resposta:
+			    - O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
+				- Os dados do cliente selecionado serão alterados na base de dados;
 	
+	--> Case 1.4: Usuário seleciona o botão <Criar Vendedor> e o microserviço createSeller é chamado.
+
+		BACK END - Microserviço createSeller
+
+			Regras:
+				- O microserviço irá inserir na base de dados (Tabela VENDEDORES), os valores correspodentes preenchidos pelo usuário;
+				- Verifica se o dado do atributo nameSeller é do tipo VARCHAR para gravação na base;
+				- Verifica se o dado do atributo tableCode é do tipo INTEGER para gravação na base;
+				- Verifica se o dado do atributo date é do tipo DATE para gravação na base;
+				- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
+				
+			Camada de gravação de dados:
+			    - Invoca métodos para insert na base de dados;
+			    - INSERT INTO VENDEROES (CDVEND, DSNOME, CDTAB, DTNASC) VALUES (CDVEND.NEXTVAL, nameSeller, tableCode, date);
+			    - Verifica status de gravação dos dados na base;
+
+			Resposta:
+			    - O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
+			    - O novo vendedor cadastrado terá os dados preenchidos na tela;
+      
+	--> Case 1.5 - Usuário seleciona botão <Excluir> na tela de Vendedores e o microserviço deleteSeller é chamado.
  
- Após procedimento, microserviço de edição de cliente é chamado.
+		BACK END - Microserviço deleteSeller
  
+			Regras:
+				- O microserviço irá excluir o vedendedor selecionado na base da dados;
+				
+			Camada de exclusão de dados:
+			    - Invoca método para delete na base de dados;
+			    - DELETE FROM VENDEDORES WHERE CDVEND = sellerCode;
+			    - Verifica status de exclusão de dados na base;
 
- 
- BACK END - Microserviço editClient
-
-Regras: 
-	- O microserviço irá atualizar os dados relacionados ao cliente que está atribuido ao vendendor selecionado na tabela CLIENTES;
-	- Verifica se o código informado sellerCode pertence a um vendedor já cadastrado;
-	- Verifica se o dado do atributo nameClient é do tipo VARCHAR para gravação na base;
-	- Verifica se o dado do atributo typeClient é do tipo CHAR para gravação na base;
-	- Verifica se o dado do atributo credLimit é do tipo DECIMAL para gravação na base;
-	- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
-	
-Camada de gravação de dados:
-	- Invoca método para update da base de dados;
-	- UPDATE CLIENTES SET DSNOME = :nameClient, IDTIPO = :typeClient, DSLIM = :credLimit WHERE CDVEND = :sellerCode;
-	- Verifica status de gravação dos dados da base;
-	
-Resposta:
-   - O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
-	- Os dados do cliente selecionado serão alterados na base de dados;
-	
-	
-
-	
- --> Case 1.4: Usuário selecio botão <Criar Vendedor> e o microserviço createSeller é chamado.
-
- BACK END - Microserviço createSeller
-
-Regras:
-
-    - O microserviço irá inserir na base de dados (Tabela VENDEDORES), os valores correspodentes preenchidos pelo usuário;
-	- Verifica se o dado do atributo nameSeller é do tipo VARCHAR para gravação na base;
-	- Verifica se o dado do atributo tableCode é do tipo INTEGER para gravação na base;
-	- Verifica se o dado do atributo date é do tipo DATE para gravação na base;
-	- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
-	
-Camada de gravação de dados:
-   - Invoca métodos para insert na base de dados;
-   - INSERT INTO VENDEROES (CDVEND, DSNOME, CDTAB, DTNASC) VALUES (codeSeller, nameSeller, tableCode, date);
-   - Verifica status de gravação dos dados na base;
-
-Resposta:
-   - O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
-   - O novo vendedor cadastrado terá os dados preenchidos na tela;
-   
-   
-  --> Case 1.5 - Usuário seleciona botão <Excluir> na tela de Vendedores e o microserviço deleteSeller é chamado;
- 
- BACK END - Microserviço deleteSeller
- 
-Regras:
-
-    - O microserviço irá excluir o vedendedor selecionado na base da dados;
-	
-Camada de exclusão de dados:
-   - Invoca método para delete na base de dados;
-   - DELETE FROM VENDEDROES WHERE CDVEND = sellerCode;
-   - Verifica status de exclusão de dados na base;
-
-
-Resposta:
-    - O microserviço irá dar a resposta de HTTP status OK para confrimar exclusão dos dados;
-	- O vendedor selecionado será excluído da base de dados;
-   
-   
+			Resposta:
+				- O microserviço irá dar a resposta de HTTP status OK para confrimar exclusão dos dados;
+				- O vendedor selecionado será excluído da base de dados;
+      
 ---------------------------------------------------------------------------------------------------------------------------------------------	
 
-Usuário seleciona botão <Clientes> na tela HOME e o microserviço listClient é chamado;
-
+Usuário seleciona botão <Clientes> na tela HOME e o microserviço listClient é chamado.
  
- BACK END - Microserviço listClient
+	BACK END - Microserviço listClient
  
- Regras:
-     - O microserviço irá listar todos os clientes na base de dados;
-	 
-Camada de consulta de dados do Cliente
-     - Invoca método para select da base de dados;	 
-     - SELECT * FROM CLIENTES 
-     - Verifica status de leitura dos dados da base;
+		Regras:
+			- O microserviço irá listar todos os clientes na base de dados;
+			 
+		Camada de consulta de dados do Cliente:
+			- Invoca método para select da base de dados;	 
+			- SELECT * FROM CLIENTES;
+			- Verifica status de leitura dos dados da base;
 
-Resposta:
-    - A tela irá apresentar todos os Clientes na base de dados;
+		Resposta:
+			- A tela irá apresentar todos os Clientes na base de dados;
 	
+	--> Case 2.1 - Usuário seleciona botão <Criar Cliente> na tela Clientes em HOME e o microserviço createClient é chamado.
+
+		BACK END - Microserviço createClient
+
+			Regras:
+				- O microserviço irá inserir na base de dados (Tabela CLIENTES), os valores correspodentes preenchidos pelo usuário;
+				- Verifica se o dado do atributo nameClient é do tipo VARCHAR para gravação na base;
+				- Verifica se o dado do atributo typeClient é do tipo CHAR para gravação na base;
+				- Verifica se o dado do atributo sellerCode é do tipo VARCHAR para gravação na base;
+				- Verifica se o dado do atributo credLimit é do tipo DECIMAL para gravação na base;
+				- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
+				
+			Camada de gravação de dados:
+				- Invoca método para insert na base de dados;
+				- INSERT INTO CLIENTES (CDCL, DSNOME, IDTIPO, CDVEND, DSLIM) VALUES (CDCL.NEXTVAL, nameClient, typeClient, sellerCode, credLimit);
+				- Verifica status de gravação dos dados na base;
+
+			Resposta:
+				- O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
+				- O novo cliente cadastrado terá os dados preenchidos na tela;
+	   
+	--> Case 2.2 - Usuário seleciona botão <Excluir> na tela de Edição de clientes e o microserviço deleteClient é chamado.
 	
-   
- --> Case 2.1 - Usuário seleciona botão <Criar Cliente> na tela Clientes em HOME e o microserviço creatClient é chamado;
-
- BACK END - Microserviço creatClient
-
-Regras:
-
-    - O microserviço irá inserir na base de dados (Tabela CLIENTES), os valores correspodentes preenchidos pelo usuário;
-	- Verifica se o dado do atributo nameClient é do tipo VARCHAR para gravação na base;
-	- Verifica se o dado do atributo typeClient é do tipo CHAR para gravação na base;
-	- Verifica se o dado do atributo sellerCode é do tipo VARCHAR para gravação na base;
-	- Verifica se o dado do atributo credLimit é do tipo DECIMAL para gravação na base;
-	- Após todas as verificações na camada de serviço, invoca a camada de gravação na base de dados;
-	
-Camada de gravação de dados:
-   - Invoca método para insert na base de dados;
-   - INSERT INTO CLIENTES (CDCL, DSNOME, IDTIPO, CDVEND, DSLIM) VALUES (codeClient, nameClient, typeClient, sellerCode, credLimit);
-   - Verifica status de gravação dos dados na base;
-
-Resposta:
-   - O microserviço irá dar a resposta de HTTP status OK para confrimar gravação dos dados;
-   - O novo cliente cadastrado terá os dados preenchidos na tela;
-   
- --> Case 2.2 - Usuário seleciona botão <Excluir> na tela de Edição de clientes e o microserviço deleteClient é chamado;
+		BACK END - Microserviço deleteClient
  
- BACK END - Microserviço deleteClient
- 
-Regras:
+			Regras:
+				- O microserviço irá excluir o cliente selecionado na base da dados;
+				
+			Camada de exclusão de dados:
+			    - Invoca método para delete na base de dados;
+			    - DELETE FROM CLIENTES WHERE CDCL = clientCode;
+			    - Verifica status de exclusão de dados na base;
 
-    - O microserviço irá excluir o cliente selecionado na base da dados;
-	
-Camada de exclusão de dados:
-   - Invoca método para delete na base de dados;
-   - DELETE FROM CLIENTES WHERE CDCL = clientCode;
-   - Verifica status de exclusão de dados na base;
-
-
-Resposta:
-    - O microserviço irá dar a resposta de HTTP status OK para confrimar exclusão dos dados;
-	- O cliente selecionado será excluído da base de dados;
-  
-   
+			Resposta:
+				- O microserviço irá dar a resposta de HTTP status OK para confirmar exclusão dos dados;
+				- O cliente selecionado será excluído da base de dados;
+     
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
-O Usuário seleciona o botão < Manutenção cadastro vendedor> ;
+O Usuário seleciona o botão <Manutenção cadastro vendedor>;
 
---> Case 3.1 - Usuário seleciona botão <Criar Vendedor> e o microserviço creatSeller é chamado;
-    - Microserviço detalhado conforme Case 1.4 acima.
+	--> Case 3.1 - Usuário seleciona botão <Criar Vendedor> e o microserviço createSeller é chamado.
+		- Microserviço detalhado conforme Case 1.4 acima.
 	
---> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deleteSeller é chamado;
-    - Microserviço detalhado conforme Case 1.5 acima.
+	--> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deleteSeller é chamado.
+		- Microserviço detalhado conforme Case 1.5 acima.
 	
---> Case 3.3 - Usuário seleciona botão <Editar Vendedor> e o microserviço editSeller é chamado;
-    - Microserviço detalhado conforme Case 1.1 acima. 
+	--> Case 3.3 - Usuário seleciona botão <Editar Vendedor> e o microserviço editSeller é chamado.
+		- Microserviço detalhado conforme Case 1.1 acima. 
    
 ---------------------------------------------------------------------------------------------------------------------------------------------	
 
-O Usuário seleciona o botão < Manutenção cadastro cliente> ;
+O Usuário seleciona o botão <Manutenção cadastro cliente>;
 
---> Case 3.1 - Usuário seleciona botão <Criar cliente> e o microserviço createClient é chamado;
+--> Case 3.1 - Usuário seleciona botão <Criar cliente> e o microserviço createClient é chamado.
     - Microserviço detalhado conforme Case 2.1 acima.
 	
---> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deleteClient é chamado;
+--> Case 3.2 - Usuário seleciona botão <Excluir> e o microserviço deleteClient é chamado.
     - Microserviço detalhado conforme Case 2.2 acima.
 	
---> Case 3.3 - Usuário seleciona botão <Editar Cliente> e o microserviço editSeller é chamado;
-    - Microserviço detalhado conforme Case 1.3 acima. 	
+--> Case 3.3 - Usuário seleciona botão <Editar Cliente> e o microserviço editSeller é chamado.
+    - Microserviço detalhado conforme Case 1.3 acima.
+	
+---------------------------------------------------------------------------------------------------------------------------------------------	
 	
 	
 	
